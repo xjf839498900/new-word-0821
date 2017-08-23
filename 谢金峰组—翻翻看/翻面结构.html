@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="css/reset.css" />
+        <style type="text/css">
+        .outer{
+            overflow: hidden;
+            width:1000px;
+            height:500px;
+            margin:0 auto;
+            margin-top: 60px;
+            background:url("images/bg1.png")0 0 no-repeat;
+            background-size: 100%;
+        }
+        .main {
+            /*display: none;*/
+            float: right;
+            width: 800px;
+            height: 100%;
+            background-color: #22ffbb;
+        }
+        .main .label {
+            float: right;
+            width: 150px;
+            height: 100%;
+        }
+        .main .box {
+            float: left;
+            width: 450px;
+            height: 450px;
+        }
+        .boxTop dl, .boxBot dl {
+            position: relative;
+            perspective: 1000;
+            float: left;
+            background-color: orange;
+        }
+        .boxTop dl:hover dd, .boxBot dl:hover dd {
+            transform: rotateY(180deg);
+        }
+        .boxTop dd, .boxBot dd {
+            transition: 1s;
+            transform-style: perserve-3d;
+        }
+        .boxTop span, .boxBot span, .boxTop img, .boxBot img {
+            backface-visibility: hidden;
+        }
+        .boxTop img, .boxBot img {
+            /*z-index: 2;*/
+        }
+        .boxTop span, .boxBot span {
+            position: absolute;
+            display: block;
+            top: 0;
+            background: url("images/5.jpg") center no-repeat;
+            /*background-color: red;*/
+            /*z-index: 2;*/
+        }
+        .boxTop img, .boxBot img {
+            position: absolute;
+            display: block;
+            top: 0;
+            /*width: 96%;
+            height: 96%;
+            padding: 2%;*/
+        }
+        .label span {
+            display: block;
+            width: 100%;
+            height:50px;
+            border-radius: 10px;
+            margin-bottom: 80px;
+            background-color: skyblue;
+            font-size: 18px;
+            line-height: 50px;
+            text-align: center;
+        }
+        .label .pause {
+            width: 100px;
+            margin: 20px auto 60px;
+        }
+        .inner, .inner2{
+            position: relative;
+            float: right;
+            width:800px;
+            height:500px;
+        }
+        .inner {
+            display: none;
+            background:url("images/bg2.png")0 0 no-repeat;
+        }
+        .inner2{
+            display: none;
+            background:url("images/bg3.png")0 0 no-repeat;
+        }
+        .inner span, .inner2 span {
+            position: absolute;
+            top: 225px;
+            left: 300px;
+            display: block;
+            width: 200px;
+            height:50px;
+            margin: 0 auto;
+            border-radius: 10px;
+            background-color: skyblue;
+            font-size: 20px;
+            line-height: 50px;
+            text-align: center;
+        }
+        </style>
+    </head>
+    <body>
+    <div class="outer" id="outer">
+        <div class="main" id="main">
+            <div class="box" id="box">
+                <div class="boxTop clearfix" id="boxTop"></div>
+                <div class="boxBot clearfix" id="boxBot"></div>
+            </div>
+            <div class="label" id="label">
+                <span class="pause" id="pause">暂停</span>
+                <span>
+                    <strong class="p1">时间:</strong>
+                    <em class="p2">60</em>
+                </span>
+                <span>
+                    <strong class="p1">关卡:</strong>
+                    <em class="p2">1</em>
+                </span>
+                <span>
+                    <strong class="p1">分数:</strong>
+                    <em class="p2">100</em>
+                </span>
+            </div>
+        </div>
+        <div class="inner" id="inner">
+            <span id="begin">开始游戏</span>
+        </div>
+        <div class="inner2" id="inner2">
+            <span id="continue">继续游戏</span>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/move.js"></script>
+    <script type="text/javascript">
+        var outer = document.getElementById("outer");//最外层视框区界面
+        var main = document.getElementById("main");//游戏主要界面
+        var inner = document.getElementById("inner");//开始游戏的滚动区界面
+        var inner2 = document.getElementById("inner2");//暂停游戏界面
+        var pause = document.getElementById("pause");//暂停按钮
+        var begin = document.getElementById("begin");//开始游戏按钮
+        var conTinue = document.getElementById("continue");//继续游戏按钮
+        var boxTop = document.getElementById("boxTop");//box上半部分
+        var boxBot = document.getElementById("boxBot");//box下半部分
+        var boxTopdivs = boxTop.getElementsByTagName("dl");
+        var boxBotdivs = boxBot.getElementsByTagName("dl");
+        var boxTopimgs = boxTop.getElementsByTagName("img");
+        var boxBotimgs = boxBot.getElementsByTagName("img");
+        var boxTopspans = boxTop.getElementsByTagName("span");
+        var boxBotspans = boxBot.getElementsByTagName("span");
+        var timercontinue = null;
+        var nowRank = 0;//关卡数
+        var rankArr = [2,3,4,5];//关卡对应的块的行个数
+        function init() {
+            boxTop.innerHTML="";
+            boxBot.innerHTML="";
+            var boxesNum = rankArr[nowRank];
+            var boxWidth = (boxTop.clientWidth) / boxesNum;
+            for(var i=0;i<boxesNum;i++){
+                boxTop.innerHTML += "<dl><dd><span></span><img /></dd></dl>";
+                boxBot.innerHTML += "<dl><dd><span></span><img /></dd></dl>";
+                boxTopdivs[i].style.width = boxWidth + "px";
+                boxTopdivs[i].style.height = boxWidth + "px";
+                boxBotdivs[i].style.width = boxWidth + "px";
+                boxBotdivs[i].style.height = boxWidth + "px";
+            }
+            var arrTop = differentRandom(boxTopimgs.length, boxTopimgs.length, 1);
+            var arrBot = differentRandom(boxTopimgs.length, boxTopimgs.length, 1);
+            for(var i=0;i<boxTopimgs.length;i++) {
+                boxTopimgs[i].src = "images/" + arrTop[i] + ".jpg";
+                boxBotimgs[i].src = "images/" + arrBot[i] + ".jpg";
+                // console.log(boxWidth * 0.96);
+                boxTopimgs[i].style.width = boxWidth * 0.96 + "px";
+                // console.log(boxTopimgs[i].style.width);
+                boxTopimgs[i].style.height = boxWidth * 0.96 + "px";
+                boxTopimgs[i].style.top = boxWidth * 0.02 + "px";
+                boxTopimgs[i].style.left = boxWidth * 0.02 + "px";
+                boxBotimgs[i].style.width = boxWidth * 0.96 + "px";
+                boxBotimgs[i].style.height = boxWidth * 0.96 + "px";
+                boxBotimgs[i].style.top = boxWidth * 0.02 + "px";
+                boxBotimgs[i].style.left = boxWidth * 0.02 + "px";
+                boxTopspans[i].style.width = boxWidth * 0.96 + "px";
+                boxTopspans[i].style.height = boxWidth * 0.96 + "px";
+                boxTopspans[i].style.top = boxWidth * 0.02 + "px";
+                boxTopspans[i].style.left = boxWidth * 0.02 + "px";
+                boxBotspans[i].style.width = boxWidth * 0.96 + "px";
+                boxBotspans[i].style.height = boxWidth * 0.96 + "px";
+                boxBotspans[i].style.top = boxWidth * 0.02 + "px";
+                boxBotspans[i].style.left = boxWidth * 0.02 + "px";
+            }
+
+        }
+        init();
+        //开始游戏按钮
+        begin.onclick = function() {
+            sport(inner, {"height": 0}, 5);
+            begin.style.display = "none";
+            main.style.display = "block";
+        }
+        //暂停游戏按钮
+        pause.onclick = function() {
+            clearInterval(timercontinue);
+            sport(main,{"opacity": 0},10);
+            sport(inner2,{"opacity": 100},10);
+            timercontinue= setTimeout(function(){
+                main.style.display = "none";
+                inner2.style.display = "block";
+            },500)
+        }
+        //继续游戏按钮
+        conTinue.onclick = function() {
+            clearInterval(timercontinue);
+            sport(inner2,{"opacity": 0},10);
+            sport(main,{"opacity": 100},10);
+            timercontinue= setTimeout(function(){
+                inner2.style.display = "none";
+                main.style.display = "block";
+            },500)
+        }
+    </script>
+    </body>
+</html>

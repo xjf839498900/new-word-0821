@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>H5course</title>
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    <style type="text/css">
+        .wrap {
+            width: 600px;
+            height: 600px;
+            margin: 0 auto;
+            padding: 10px 0 0 10px;
+            border: 1px solid black;
+        }
+        .first, .second {
+            position: relative;
+            width: 600px;
+            height: 300px;
+        }
+        .first div, .second div {
+            float: left;
+            width: 290px;
+            height: 290px;
+            margin-right: 10px;
+        }
+        .first img, .second img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .wrap span {
+            position: absolute;
+            display: block;
+            /*display: none;*/
+            top: 0;
+            width: 290px;
+            height: 290px;
+            background: url("images/Bpic.jpg") center no-repeat;
+        }
+        .wrap .show {
+            display: block;
+        }
+        .wrap .noshow {
+            display: none;
+        }
+        .wrap .visShow {
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap" id="wrap">
+        <div class="first" id="first">
+            <span></span>
+            <span></span>
+            <div><img src="" height="220" width="320" alt="" /></div>
+            <div><img src="" height="450" width="450" alt="" /></div>
+        </div>
+        <div class="second" id="second">
+            <span></span>
+            <span></span>
+            <div><img src="" height="450" width="450" alt="" /></div>
+            <div><img src="" height="220" width="320" alt="" /></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+    var wrap = document.getElementById("wrap");
+    var first = document.getElementById("first");
+    var second = document.getElementById("second");
+    var spanF = document.getElementById("first").getElementsByTagName("span");
+    var spanS = document.getElementById("second").getElementsByTagName("span");
+    var imgF = document.getElementById("first").getElementsByTagName("img");
+    var imgS = document.getElementById("second").getElementsByTagName("img");
+    var spanWidth = 290;
+    var arr1 = [1, 2];
+    var arr2 = [2, 1];
+    var num = 0;
+    for(var i = 0; i < spanF.length; i++) {
+        spanF[i].style.left = i*10 + i*spanWidth + "px";
+        spanS[i].style.left = i*10 + i*spanWidth + "px";
+        spanF[i].index = i;
+        spanS[i].index = i;
+        imgF[i].src = "images/" + arr1[i] + ".jpg";
+        imgS[i].src = "images/" + arr2[i] + ".jpg";
+        spanF[i].onclick = function() {
+            for(var j = 0; j < spanF.length; j++) {
+                spanF[j].className = "show";
+            }
+            this.className = "noshow";
+            num = arr1[this.index];
+            for(var z = 0; z < spanS.length; z++) {
+                spanS[z].index = z;
+                spanS[z].onclick = function() {
+                    for(var j = 0; j < spanS.length; j++) {
+                        spanS[j].className = "show";
+                    }
+                    this.className = "noshow";
+                    if(arr2[this.index] == num) {
+                        var indnum = arr1.indexOf(num);
+                        imgF[indnum].className = "visShow";
+                        imgS[this.index].className = "visShow";
+                        spanF[indnum].style.display = "none";
+                        spanS[this.index].style.display = "none";
+                    }
+                }
+            }
+        }
+        spanS[i].onclick = function() {
+            for(var j = 0; j < spanS.length; j++) {
+                spanS[j].className = "show";
+            }
+            this.className = "noshow";
+            num = arr2[this.index];
+            for(var z = 0; z < spanF.length; z++) {
+                spanF[z].index = z;
+                spanF[z].onclick = function() {
+                    for(var j = 0; j < spanF.length; j++) {
+                        spanF[j].className = "show";
+                    }
+                    this.className = "noshow";
+                    if(arr1[this.index] == num) {
+                        var indnum = arr2.indexOf(num);
+                        imgF[this.index].className = "visShow";
+                        imgS[indnum].className = "visShow";
+                        spanF[this.index].style.display = "none";
+                        spanS[indnum].style.display = "none";
+                    }
+                }
+            }
+        }
+        wrap.onmouseleave = function() {
+            for(var j = 0; j < spanF.length; j++) {
+                imgF[j].className = "";
+                imgS[j].className = "";
+                imgF[j].className = "show";
+                imgS[j].className = "show";
+                spanF[j].style.display = "";
+                spanS[j].style.display = "";
+                spanF[j].className = "show";
+                spanS[j].className = "show";
+            }
+        }
+    }
+    </script>
+</body>
+</html>
